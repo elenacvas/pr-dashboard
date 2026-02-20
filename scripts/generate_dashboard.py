@@ -7,6 +7,8 @@ import sys
 import argparse
 from datetime import datetime, timezone
 from github import Github, Auth
+import json
+from jinja2 import Environment, FileSystemLoader
 
 
 def parse_args():
@@ -140,6 +142,38 @@ def calculate_metrics(github_data):
     return metrics
 
 
+def generate_html(metrics, output_dir):
+    """
+    Generate HTML dashboard from metrics.
+
+    Args:
+        metrics: dict with calculated metrics
+        output_dir: Output directory path
+    """
+    print("\n🎨 Generating HTML dashboard...")
+
+    # Create output directory
+    os.makedirs(output_dir, exist_ok=True)
+
+    # Setup Jinja2
+    template_dir = os.path.join(os.path.dirname(__file__), 'templates')
+    env = Environment(loader=FileSystemLoader(template_dir))
+    template = env.get_template('index.html.j2')
+
+    # Render template
+    html_content = template.render(
+        metrics=metrics,
+        metrics_json=json.dumps(metrics, indent=2)
+    )
+
+    # Write HTML file
+    output_path = os.path.join(output_dir, 'index.html')
+    with open(output_path, 'w', encoding='utf-8') as f:
+        f.write(html_content)
+
+    print(f"✅ Dashboard generated: {output_path}")
+
+
 def fetch_github_data(repo_name, token):
     """
     Fetch PR data from GitHub.
@@ -205,8 +239,11 @@ def main():
     # Calculate metrics
     metrics = calculate_metrics(github_data)
 
+    # Generate HTML
+    generate_html(metrics, args.output)
+
     print("\n" + "=" * 60)
-    print("✅ Processing complete")
+    print("✅ Dashboard generation complete")
     print("=" * 60)
 
 

@@ -4,9 +4,57 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PR Dashboard - masmovil/infrastructure</title>
+    <link rel="stylesheet" href="../static/style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 </head>
 <body>
-    <h1>PR Dashboard</h1>
-    <p>Last updated: {{ last_updated }}</p>
+    <header>
+        <h1>PR Dashboard - masmovil/infrastructure</h1>
+        <p class="last-updated">Última actualización: {{ metrics.last_updated }}</p>
+    </header>
+
+    <main>
+        <section class="global-section">
+            <h2>📊 Visión Global</h2>
+            <div class="metrics-cards">
+                <div class="card">
+                    <h3>{{ metrics.global.total_open }}</h3>
+                    <p>Total PRs Abiertas</p>
+                </div>
+                <div class="card">
+                    <h3>{{ metrics.global.draft }}</h3>
+                    <p>Draft</p>
+                </div>
+                <div class="card">
+                    <h3>{{ metrics.global.non_draft }}</h3>
+                    <p>No-Draft</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="cloud-sre-section">
+            <h2>🎯 Cloud SRE - Pendientes de revisión</h2>
+            <div class="metrics-cards">
+                <div class="card">
+                    <h3>{{ metrics.cloud_sre.total_open }}</h3>
+                    <p>Pendientes</p>
+                </div>
+                <div class="card">
+                    <h3>{{ metrics.cloud_sre.draft }}</h3>
+                    <p>Draft</p>
+                </div>
+                <div class="card">
+                    <h3>{{ metrics.cloud_sre.non_draft }}</h3>
+                    <p>No-Draft</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        // Metrics data from Python
+        const metricsData = {{ metrics_json | safe }};
+        console.log('Metrics loaded:', metricsData);
+    </script>
 </body>
 </html>
