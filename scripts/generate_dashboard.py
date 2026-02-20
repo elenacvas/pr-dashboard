@@ -128,7 +128,7 @@ def calculate_metrics(github_data):
             'age_buckets': global_age_buckets,
         },
         'cloud_sre': {
-            'pending': cloud_sre_total,
+            'total_open': cloud_sre_total,
             'draft': cloud_sre_draft,
             'non_draft': cloud_sre_non_draft,
             'age_buckets': cloud_sre_age_buckets,
