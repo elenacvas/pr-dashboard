@@ -30,6 +30,13 @@
                     <p>No-Draft</p>
                 </div>
             </div>
+
+            <div class="charts">
+                <div class="chart-container">
+                    <h3>Distribución por Antigüedad</h3>
+                    <canvas id="globalAgeChart"></canvas>
+                </div>
+            </div>
         </section>
 
         <section class="cloud-sre-section">
@@ -48,6 +55,13 @@
                     <p>No-Draft</p>
                 </div>
             </div>
+
+            <div class="charts">
+                <div class="chart-container">
+                    <h3>Distribución por Antigüedad - Cloud SRE</h3>
+                    <canvas id="cloudSreAgeChart"></canvas>
+                </div>
+            </div>
         </section>
     </main>
 
@@ -55,6 +69,88 @@
         // Metrics data from Python
         const metricsData = {{ metrics_json | safe }};
         console.log('Metrics loaded:', metricsData);
+
+        // MasOrange colors
+        const colors = {
+            orange: '#FF7800',
+            black: '#000000',
+            gray: '#86868E',
+            yellow: '#FFE000'
+        };
+
+        // Age bucket labels and order
+        const ageBucketLabels = ['<1d', '<2d', '<3d', '<4d', '<5d', '<7d', '<15d', '<20d', '>20d'];
+
+        // Prepare age distribution data
+        function prepareAgeData(ageBuckets) {
+            return ageBucketLabels.map(label => ageBuckets[label] || 0);
+        }
+
+        // Global Age Chart
+        const globalAgeCtx = document.getElementById('globalAgeChart').getContext('2d');
+        new Chart(globalAgeCtx, {
+            type: 'bar',
+            data: {
+                labels: ageBucketLabels,
+                datasets: [{
+                    label: 'PRs por antigüedad',
+                    data: prepareAgeData(metricsData.global.age_buckets),
+                    backgroundColor: colors.orange,
+                    borderColor: colors.black,
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            stepSize: 1
+                        }
+                    }
+                }
+            }
+        });
+
+        // Cloud SRE Age Chart
+        const cloudSreAgeCtx = document.getElementById('cloudSreAgeChart').getContext('2d');
+        new Chart(cloudSreAgeCtx, {
+            type: 'bar',
+            data: {
+                labels: ageBucketLabels,
+                datasets: [{
+                    label: 'PRs Cloud SRE por antigüedad',
+                    data: prepareAgeData(metricsData.cloud_sre.age_buckets),
+                    backgroundColor: colors.orange,
+                    borderColor: colors.black,
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            stepSize: 1
+                        }
+                    }
+                }
+            }
+        });
     </script>
 </body>
 </html>
