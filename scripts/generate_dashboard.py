@@ -5,7 +5,7 @@ Generate PR Dashboard for masmovil/infrastructure
 import os
 import sys
 import argparse
-from datetime import datetime
+from datetime import datetime, timezone
 from github import Github, Auth
 
 
@@ -28,6 +28,116 @@ def parse_args():
         help="GitHub token (default: from GITHUB_TOKEN env var)"
     )
     return parser.parse_args()
+
+
+def calculate_age_bucket(created_at):
+    """
+    Calculate age bucket for a PR.
+
+    Args:
+        created_at: datetime object (PR creation time)
+
+    Returns:
+        str: bucket label ('<1d', '<2d', etc.)
+    """
+    now = datetime.now(timezone.utc)
+    age_days = (now - created_at).days
+
+    if age_days < 1:
+        return '<1d'
+    elif age_days < 2:
+        return '<2d'
+    elif age_days < 3:
+        return '<3d'
+    elif age_days < 4:
+        return '<4d'
+    elif age_days < 5:
+        return '<5d'
+    elif age_days < 7:
+        return '<7d'
+    elif age_days < 15:
+        return '<15d'
+    elif age_days < 20:
+        return '<20d'
+    else:
+        return '>20d'
+
+
+def calculate_age_distribution(prs):
+    """
+    Calculate age distribution for a list of PRs.
+
+    Args:
+        prs: List of PR objects
+
+    Returns:
+        dict: Bucket counts (e.g., {'<1d': 5, '<2d': 3, ...})
+    """
+    buckets = {
+        '<1d': 0, '<2d': 0, '<3d': 0, '<4d': 0, '<5d': 0,
+        '<7d': 0, '<15d': 0, '<20d': 0, '>20d': 0
+    }
+
+    for pr in prs:
+        bucket = calculate_age_bucket(pr.created_at)
+        buckets[bucket] += 1
+
+    return buckets
+
+
+def calculate_metrics(github_data):
+    """
+    Calculate all dashboard metrics.
+
+    Args:
+        github_data: dict with 'all_prs' and 'cloud_sre_prs'
+
+    Returns:
+        dict: All calculated metrics
+    """
+    all_prs = github_data['all_prs']
+    cloud_sre_prs = github_data['cloud_sre_prs']
+
+    print("\n📊 Calculating metrics...")
+
+    # Global metrics
+    total_open = len(all_prs)
+    draft_count = sum(1 for pr in all_prs if pr.draft)
+    non_draft_count = total_open - draft_count
+
+    print(f"  Global: {total_open} total ({draft_count} draft, {non_draft_count} non-draft)")
+
+    # Cloud SRE metrics
+    cloud_sre_total = len(cloud_sre_prs)
+    cloud_sre_draft = sum(1 for pr in cloud_sre_prs if pr.draft)
+    cloud_sre_non_draft = cloud_sre_total - cloud_sre_draft
+
+    print(f"  Cloud SRE: {cloud_sre_total} total ({cloud_sre_draft} draft, {cloud_sre_non_draft} non-draft)")
+
+    # Age distributions
+    global_age_buckets = calculate_age_distribution(all_prs)
+    cloud_sre_age_buckets = calculate_age_distribution(cloud_sre_prs)
+
+    print(f"  Age distributions calculated")
+
+    metrics = {
+        'global': {
+            'total_open': total_open,
+            'draft': draft_count,
+            'non_draft': non_draft_count,
+            'age_buckets': global_age_buckets,
+        },
+        'cloud_sre': {
+            'pending': cloud_sre_total,
+            'draft': cloud_sre_draft,
+            'non_draft': cloud_sre_non_draft,
+            'age_buckets': cloud_sre_age_buckets,
+        },
+        'last_updated': datetime.now(timezone.utc).isoformat()
+    }
+
+    print("✅ Metrics calculated")
+    return metrics
 
 
 def fetch_github_data(repo_name, token):
@@ -92,8 +202,11 @@ def main():
     # Fetch data from GitHub
     github_data = fetch_github_data(args.repo, args.token)
 
+    # Calculate metrics
+    metrics = calculate_metrics(github_data)
+
     print("\n" + "=" * 60)
-    print("✅ Data collection complete")
+    print("✅ Processing complete")
     print("=" * 60)
 
 
