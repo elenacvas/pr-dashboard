@@ -8,7 +8,8 @@ import argparse
 from datetime import datetime, timezone
 from github import Github, Auth
 import json
-from jinja2 import Environment, FileSystemLoader
+import shutil
+from jinja2 import Environment, FileSystemLoader, select_autoescape
 
 
 def parse_args():
@@ -155,9 +156,20 @@ def generate_html(metrics, output_dir):
     # Create output directory
     os.makedirs(output_dir, exist_ok=True)
 
+    # Copy static files to output
+    static_src = os.path.join(os.path.dirname(__file__), '..', 'static')
+    static_dst = os.path.join(output_dir, 'static')
+    if os.path.exists(static_src):
+        if os.path.exists(static_dst):
+            shutil.rmtree(static_dst)
+        shutil.copytree(static_src, static_dst)
+
     # Setup Jinja2
     template_dir = os.path.join(os.path.dirname(__file__), 'templates')
-    env = Environment(loader=FileSystemLoader(template_dir))
+    env = Environment(
+        loader=FileSystemLoader(template_dir),
+        autoescape=select_autoescape(['html', 'html.j2'])
+    )
     template = env.get_template('index.html.j2')
 
     # Render template
