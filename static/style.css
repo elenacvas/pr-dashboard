@@ -1,0 +1,138 @@
+/* MasOrange Corporate Identity */
+:root {
+    --orange-primary: #FF7800;
+    --black: #000000;
+    --white: #FFFFFF;
+    --gray-dark: #86868E;
+    --gray-light: #DEDDE0;
+    --gray-bg: #F0F0F0;
+    --yellow-warning: #FFE000;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: var(--white);
+    color: var(--black);
+    line-height: 1.6;
+}
+
+header {
+    background-color: var(--black);
+    color: var(--white);
+    padding: 2rem;
+    text-align: center;
+}
+
+header h1 {
+    font-size: 2.5rem;
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+}
+
+.last-updated {
+    color: var(--gray-light);
+    font-size: 0.9rem;
+}
+
+main {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+section {
+    margin-bottom: 3rem;
+    background-color: var(--white);
+    border: 1px solid var(--gray-light);
+    border-radius: 8px;
+    padding: 2rem;
+}
+
+h2 {
+    font-size: 1.8rem;
+    font-weight: bold;
+    margin-bottom: 1.5rem;
+    color: var(--black);
+    border-left: 4px solid var(--orange-primary);
+    padding-left: 1rem;
+}
+
+.metrics-cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+    margin-top: 1rem;
+}
+
+.card {
+    background-color: var(--gray-bg);
+    border-radius: 8px;
+    padding: 1.5rem;
+    text-align: center;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.card h3 {
+    font-size: 3rem;
+    font-weight: bold;
+    color: var(--orange-primary);
+    margin-bottom: 0.5rem;
+}
+
+.card p {
+    font-size: 1rem;
+    color: var(--gray-dark);
+}
+
+.global-section {
+    border-top: 4px solid var(--orange-primary);
+}
+
+.cloud-sre-section {
+    border-top: 4px solid var(--orange-primary);
+    background-color: #FFF9F0;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    header h1 {
+        font-size: 1.8rem;
+    }
+
+    .metrics-cards {
+        grid-template-columns: 1fr;
+    }
+
+    main {
+        padding: 1rem;
+    }
+}
+
+.charts {
+    margin-top: 2rem;
+}
+
+.chart-container {
+    background-color: var(--white);
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.chart-container h3 {
+    font-size: 1.2rem;
+    font-weight: bold;
+    margin-bottom: 1rem;
+    color: var(--black);
+}
+
+.chart-container canvas {
+    max-height: 400px;
+}
