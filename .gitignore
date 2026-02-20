@@ -53,3 +53,7 @@ secrets/
 # OS Files
 .DS_Store
 Thumbs.db
+
+# Generated output
+dist/
+test_output/
